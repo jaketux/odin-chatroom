@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_PUBLIC_URL")
+}
+
+model User {
+  id                     String            @id @default(uuid())
+  username               String            @unique
+  email                  String            @unique
+  firstname              String
+  lastname               String
+  password               Password?
+  profilepicture         String
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime
+  messages               Message[]
+  chats                  Chat[]
+  friendships            FriendListEntry[] @relation("UserFriendships")
+  friendOf               FriendListEntry[] @relation("FriendOf")
+  sentFriendRequests     FriendRequest[]   @relation("SentRequests")
+  receivedFriendRequests FriendRequest[]   @relation("ReceivedRequests")
+}
+
+model FriendListEntry {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  friendId  String
+  createdAt DateTime @default(now())
+
+  user   User @relation("UserFriendships", fields: [userId], references: [id])
+  friend User @relation("FriendOf", fields: [friendId], references: [id])
+
+  @@unique([userId, friendId])
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
+model FriendRequest {
+  id         Int                 @id @default(autoincrement())
+  senderId   String
+  receiverId String
+  status     FriendRequestStatus @default(PENDING)
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime
+  sender     User                @relation("SentRequests", fields: [senderId], references: [id])
+  receiver   User                @relation("ReceivedRequests", fields: [receiverId], references: [id])
+
+  @@unique([senderId, receiverId])
+}
+
+model Password {
+  id     Int    @id @default(autoincrement())
+  hash   String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  content   String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    Int
+}
+
+model Chat {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  users     User[]
+  messages  Message[]
+}
