@@ -8,7 +8,7 @@ const usersRouter = Router();
 
 const verifyToken = require("../middleware/authMiddleware.js");
 
-usersRouter.post("/", usersController.signupUser);
+usersRouter.post("/", usersController.createUser);
 usersRouter.post("/login", usersController.loginUser);
 usersRouter.get("/", usersController.getUser);
 usersRouter.put("/", usersController.updateUser);

@@ -6,15 +6,15 @@ const friendRequestRouter = Router();
 
 const friendRequestController = require("../controllers/friendRequestController.js");
 
-friendRequestRouter.get("/", friendRequestController.getFriendRequests());
-friendRequestRouter.post("/", friendRequestController.createFriendRequest());
+friendRequestRouter.get("/", friendRequestController.getFriendRequests);
+friendRequestRouter.post("/", friendRequestController.createFriendRequest);
 friendRequestRouter.patch(
   "/:friendrequestid",
-  friendRequestController.updateFriendRequest()
+  friendRequestController.updateFriendRequest
 );
 friendRequestRouter.delete(
   "/:friendrequestid",
-  friendRequestController.deleteFriendRequest()
+  friendRequestController.deleteFriendRequest
 );
 
 module.exports = friendRequestRouter;

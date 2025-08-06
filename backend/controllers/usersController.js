@@ -42,6 +42,96 @@ async function loginUser(req, res) {
   }
 }
 
+async function createUser(req, res) {
+  const { username, password, email, firstname, lastname, profilepicture } =
+    req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  try {
+    const newUser = await prisma.user.create({
+      data: {
+        username,
+        password: {
+          create: {
+            hash: hashedPassword,
+          },
+        },
+        email,
+        firstname,
+        lastname,
+        profilepicture,
+      },
+    });
+    return res.json(newUser);
+  } catch (error) {
+    console.error("Error received when creating user: " + error);
+  }
+}
+
+async function getUser(req, res) {
+  jwt.verify(req.token, "chatroom", async (error, authData) => {
+    if (error) {
+      console.error("Error received when verifying the bearer token: " + error);
+      res.status(403).json({ error: "Error when verifying the bearer token" });
+    } else {
+      try {
+        const tokenUserId = authData.sub;
+
+        const userProfile = await prisma.user.findUnique({
+          where: {
+            id: tokenUserId,
+          },
+          include: {
+            chats: true,
+            friendships: true,
+            sentFriendRequests: true,
+            receivedFriendRequests: true,
+          },
+        });
+        return res.json(userProfile);
+      } catch (error) {
+        res
+          .status(404)
+          .json({ error: "No profile found matching this user ID" });
+      }
+    }
+  });
+}
+
+async function updateUser(req, res) {
+  const { username, email, firstname, lastname, profilepicture } = req.body;
+
+  jwt.verify(req.token, "chatroom", async (error, authData) => {
+    if (error) {
+      console.error("Error received when verifying the bearer token: " + error);
+      res.status(403).json({ error: "Error when verifying the bearer token." });
+    } else {
+      try {
+        const tokenUserId = authData.sub;
+
+        const updatedUser = await prisma.user.update({
+          where: {
+            id: tokenUserId,
+          },
+          data: {
+            username,
+            email,
+            firstname,
+            lastname,
+            profilepicture,
+          },
+        });
+        return res.json(updatedUser);
+      } catch (error) {
+        console.error("Error received when updating user: " + error);
+      }
+    }
+  });
+}
+
 module.exports = {
   loginUser,
+  createUser,
+  getUser,
+  updateUser,
 };
