@@ -14,10 +14,12 @@ const bcrypt = require("bcryptjs");
 const usersRouter = require("./routes/usersRouter");
 const friendRequestRouter = require("./routes/usersRouter");
 const chatRouter = require("./routes/chatRouter");
+const friendsRouter = require("./routes/friends");
 
 app.use("/users", usersRouter);
 app.use("/friendrequests", friendRequestRouter);
 app.use("/chats", chatRouter);
+app.use("/friends", friendsRouter);
 
 app.listen(5000, () => {
   console.log(`Express app listening on port 5000`);

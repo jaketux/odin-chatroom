@@ -109,7 +109,7 @@ async function updateFriendRequest(req, res) {
           });
         }
 
-        const updatedRequest = await prisma.friendrequest.findUnique({
+        const updatedRequest = await prisma.friendrequest.update({
           where: {
             id: requestId,
           },
@@ -117,6 +117,15 @@ async function updateFriendRequest(req, res) {
             status: update,
           },
         });
+
+        if (update === "ACCEPT") {
+          const newFriendListEntry = await prisma.friendlistentry.create({
+            data: {
+              userId: requestToUpdate.receiverId,
+              friendId: requestToUpdate.senderId,
+            },
+          });
+        }
 
         const sentRequests = await prisma.friendrequest.findMany({
           where: {
@@ -130,9 +139,16 @@ async function updateFriendRequest(req, res) {
           },
         });
 
+        const updatedUser = await prisma.user.findUnique({
+          where: {
+            id: tokenUserId,
+          },
+        });
+
         return res.json({
           sentRequests: sentRequests,
           receivedRequests: receivedRequests,
+          updatedUser: updatedUser,
         });
       } catch (error) {
         console.error("Error received when updating Friend Request: " + error);
