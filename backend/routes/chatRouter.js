@@ -8,9 +8,9 @@ const chatRouter = Router();
 
 const verifyToken = require("../middleware/authMiddleware.js");
 
-chatRouter.get("/", chatController.getAllChats);
-chatRouter.get("/:chatid", chatController.getChat);
-chatRouter.post("/", chatController.createChat);
-chatRouter.post("/:chatid", chatController.createMessage);
+chatRouter.get("/", verifyToken, chatController.getAllChats);
+chatRouter.get("/:chatid", verifyToken, chatController.getChat);
+chatRouter.post("/", verifyToken, chatController.createChat);
+chatRouter.post("/:chatid", verifyToken, chatController.createMessage);
 
 module.exports = chatRouter;

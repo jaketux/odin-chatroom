@@ -10,7 +10,7 @@ const verifyToken = require("../middleware/authMiddleware.js");
 
 usersRouter.post("/", usersController.createUser);
 usersRouter.post("/login", usersController.loginUser);
-usersRouter.get("/", usersController.getUser);
-usersRouter.put("/", usersController.updateUser);
+usersRouter.get("/", verifyToken, usersController.getUser);
+usersRouter.put("/", verifyToken, usersController.updateUser);
 
 module.exports = usersRouter;

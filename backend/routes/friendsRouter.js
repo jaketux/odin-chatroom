@@ -8,6 +8,10 @@ const friendsRouter = Router();
 
 const verifyToken = require("../middleware/authMiddleware.js");
 
-friendsRouter.delete("/:friendid", friendsController.deleteFriend);
+friendsRouter.delete(
+  "/:friendshipid",
+  verifyToken,
+  friendsController.deleteFriend
+);
 
 module.exports = friendsRouter;

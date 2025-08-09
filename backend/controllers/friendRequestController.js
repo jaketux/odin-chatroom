@@ -1,7 +1,5 @@
 require("dotenv").config();
 
-const bcrypt = require("bcryptjs");
-
 const prisma = require("../prisma.ts");
 
 const jwt = require("jsonwebtoken");
@@ -15,13 +13,13 @@ async function getFriendRequests(req, res) {
       try {
         const tokenUserId = authData.sub;
 
-        const sentRequests = await prisma.friendrequest.findMany({
+        const sentRequests = await prisma.friendRequest.findMany({
           where: {
             senderId: tokenUserId,
           },
         });
 
-        const receivedRequests = await prisma.friendrequest.findMany({
+        const receivedRequests = await prisma.friendRequest.findMany({
           where: {
             receiverId: tokenUserId,
           },
@@ -54,20 +52,20 @@ async function createFriendRequest(req, res) {
           },
         });
 
-        const newFriendRequest = await prisma.friendrequest.create({
+        const newFriendRequest = await prisma.friendRequest.create({
           data: {
             senderId: tokenUserId,
             receiverId: requestedUser.id,
           },
         });
 
-        const sentRequests = await prisma.friendrequest.findMany({
+        const sentRequests = await prisma.friendRequest.findMany({
           where: {
             senderId: tokenUserId,
           },
         });
 
-        const receivedRequests = await prisma.friendrequest.findMany({
+        const receivedRequests = await prisma.friendRequest.findMany({
           where: {
             receiverId: tokenUserId,
           },
@@ -97,7 +95,7 @@ async function updateFriendRequest(req, res) {
 
         const tokenUserId = authData.sub;
 
-        const requestToUpdate = await prisma.friendrequest.findUnique({
+        const requestToUpdate = await prisma.friendRequest.findUnique({
           where: {
             id: requestId,
           },
@@ -109,7 +107,7 @@ async function updateFriendRequest(req, res) {
           });
         }
 
-        const updatedRequest = await prisma.friendrequest.update({
+        const updatedRequest = await prisma.friendRequest.update({
           where: {
             id: requestId,
           },
@@ -118,22 +116,22 @@ async function updateFriendRequest(req, res) {
           },
         });
 
-        if (update === "ACCEPT") {
-          const newFriendListEntry = await prisma.friendlistentry.create({
+        if (update === "ACCEPTED") {
+          const newFriendListEntry = await prisma.friendListEntry.create({
             data: {
-              userId: requestToUpdate.receiverId,
-              friendId: requestToUpdate.senderId,
+              userId: requestToUpdate.senderId,
+              friendId: requestToUpdate.receiverId,
             },
           });
         }
 
-        const sentRequests = await prisma.friendrequest.findMany({
+        const sentRequests = await prisma.friendRequest.findMany({
           where: {
             senderId: tokenUserId,
           },
         });
 
-        const receivedRequests = await prisma.friendrequest.findMany({
+        const receivedRequests = await prisma.friendRequest.findMany({
           where: {
             receiverId: tokenUserId,
           },
@@ -142,6 +140,13 @@ async function updateFriendRequest(req, res) {
         const updatedUser = await prisma.user.findUnique({
           where: {
             id: tokenUserId,
+          },
+          include: {
+            friendships: true,
+            friendOf: true,
+            sentFriendRequests: true,
+            receivedFriendRequests: true,
+            chats: true,
           },
         });
 
@@ -167,9 +172,9 @@ async function deleteFriendRequest(req, res) {
     } else {
       try {
         const tokenUserId = authData.sub;
-        const requestId = req.params.friendrequestid;
+        const requestId = parseInt(req.params.friendrequestid);
 
-        const friendRequest = await prisma.friendrequest.findUnique({
+        const friendRequest = await prisma.friendRequest.findUnique({
           where: {
             id: requestId,
           },
@@ -181,19 +186,32 @@ async function deleteFriendRequest(req, res) {
             .json({ error: "Cannot delete friend requests for other users." });
         }
 
-        const deletedRequest = await prisma.friendrequest.delete({
+        const deletedRequest = await prisma.friendRequest.delete({
           where: {
             id: requestId,
           },
         });
 
-        const sentRequests = await prisma.friendrequest.findMany({
+        const updatedUser = await prisma.user.findUnique({
+          where: {
+            id: tokenUserId,
+          },
+          include: {
+            friendships: true,
+            friendOf: true,
+            sentFriendRequests: true,
+            receivedFriendRequests: true,
+            chats: true,
+          },
+        });
+
+        const sentRequests = await prisma.friendRequest.findMany({
           where: {
             senderId: tokenUserId,
           },
         });
 
-        const receivedRequests = await prisma.friendrequest.findMany({
+        const receivedRequests = await prisma.friendRequest.findMany({
           where: {
             receiverId: tokenUserId,
           },
@@ -202,6 +220,7 @@ async function deleteFriendRequest(req, res) {
         return res.json({
           sentRequests: sentRequests,
           receivedRequests: receivedRequests,
+          updatedUser: updatedUser,
         });
       } catch (error) {
         console.error("Error when deleting friend request");

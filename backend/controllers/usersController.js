@@ -15,6 +15,11 @@ async function loginUser(req, res) {
       },
       include: {
         password: true,
+        friendships: true,
+        friendOf: true,
+        chats: true,
+        sentFriendRequests: true,
+        receivedFriendRequests: true,
       },
     });
 
@@ -84,6 +89,7 @@ async function getUser(req, res) {
           include: {
             chats: true,
             friendships: true,
+            friendOf: true,
             sentFriendRequests: true,
             receivedFriendRequests: true,
           },
@@ -120,7 +126,15 @@ async function updateUser(req, res) {
             lastname,
             profilepicture,
           },
+          include: {
+            friendships: true,
+            friendOf: true,
+            chats: true,
+            sentFriendRequests: true,
+            receivedFriendRequests: true,
+          },
         });
+
         return res.json(updatedUser);
       } catch (error) {
         console.error("Error received when updating user: " + error);

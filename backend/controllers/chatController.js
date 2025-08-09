@@ -32,14 +32,14 @@ async function getAllChats(req, res) {
 }
 
 async function getChat(req, res) {
-  const chatId = req.params.chatid;
-
   jwt.verify(req.token, "chatroom", async (error, authData) => {
     if (error) {
       console.error("Error when validating bearer token: " + error);
       res.status(403).json({ error: "Error when validating bearer token." });
     } else {
       try {
+        const chatId = parseInt(req.params.chatid);
+
         const tokenUserId = authData.sub;
 
         const foundChat = await prisma.chat.findUnique({
@@ -80,18 +80,27 @@ async function createChat(req, res) {
       try {
         const tokenUserId = authData.sub;
 
-        const result =
-          await prisma.$queryRaw`SELECT * FROM User WHERE username IN (${Prisma.join(
-            usernames
-          )})`;
+        let parsedUsernames = usernames;
 
-        if (result.length !== usernames.length) {
+        if (typeof usernames === "string") {
+          parsedUsernames = JSON.parse(usernames);
+        }
+
+        const result = await prisma.user.findMany({
+          where: {
+            username: {
+              in: parsedUsernames,
+            },
+          },
+        });
+
+        if (result.length !== parsedUsernames.length) {
           return res
             .status(403)
             .json({ error: "One or more usernames does not exist." });
         }
 
-        const searchedUsers = result.find((user) => user.id === tokenUserId);
+        const searchedUsers = result.filter((user) => user.id === tokenUserId);
 
         if (!searchedUsers) {
           return res
@@ -102,13 +111,19 @@ async function createChat(req, res) {
         const newChat = await prisma.chat.create({
           data: {
             name: name,
-            users: result,
+            users: {
+              connect: result.map((user) => ({ id: user.id })),
+            },
+          },
+          include: {
+            users: true,
+            messages: true,
           },
         });
 
         return res.json(newChat);
       } catch (error) {
-        console.error("Error when creating new chat");
+        console.error("Error when creating new chat" + error);
       }
     }
   });
@@ -116,7 +131,7 @@ async function createChat(req, res) {
 
 async function createMessage(req, res) {
   const { content } = req.body;
-  const chatId = req.params.chatid;
+  const chatId = parseInt(req.params.chatid);
 
   jwt.verify(req.token, "chatroom", async (error, authData) => {
     if (error) {
@@ -137,6 +152,10 @@ async function createMessage(req, res) {
         const updatedChat = await prisma.chat.findUnique({
           where: {
             id: chatId,
+          },
+          include: {
+            users: true,
+            messages: true,
           },
         });
 

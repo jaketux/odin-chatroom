@@ -12,9 +12,9 @@ app.use(express.json());
 const bcrypt = require("bcryptjs");
 
 const usersRouter = require("./routes/usersRouter");
-const friendRequestRouter = require("./routes/usersRouter");
+const friendRequestRouter = require("./routes/friendRequestRouter");
 const chatRouter = require("./routes/chatRouter");
-const friendsRouter = require("./routes/friends");
+const friendsRouter = require("./routes/friendsRouter");
 
 app.use("/users", usersRouter);
 app.use("/friendrequests", friendRequestRouter);
