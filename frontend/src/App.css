@@ -22,7 +22,7 @@ body {
   height: 70px;
   font-weight: 700;
   color: white;
-  background-color: #245dda;
+  background-color: #006aff;
 }
 
 .header-nav-left,
@@ -44,38 +44,81 @@ body {
 
 .message-user {
   display: flex;
-  width: 300px;
+  width: 450px;
   flex-direction: column;
   align-items: flex-end;
   justify-content: flex-end;
+  margin: 20px 0px;
 }
 
 .message-user-top {
   display: flex;
   font-size: 12px;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 3px;
 }
 
-.message-user-top,
-.message-user-bottom {
-  width: 300px;
+.message-username,
+.message-username-user {
+  margin-right: 5px;
+  font-weight: 600;
 }
 
+.message-time-user {
+  font-size: 10px;
+}
+
+.message-content,
 .message-content-user {
   font-size: 14px;
   word-wrap: break-word;
   word-break: break-all;
+  border-radius: 10px;
+  padding: 10px;
+  color: white;
+  box-sizing: border-box;
+}
+
+.message-user-bottom {
+  width: 300px;
+}
+.message-content-user {
+  background-color: #006aff;
+  width: 300px;
+}
+
+.message-content {
+  background-color: #363f45;
 }
 
 .message {
   display: flex;
-  width: 400px;
+  width: 450px;
 }
 
+.message-left {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.message-right {
+  margin-left: 5px;
+}
 .message-right-top {
   font-size: 12px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.message-right-bottom {
+  width: 300px;
 }
 
 .message-profile-pic {
   height: 30px;
-  margin-right: 7px;
+  width: 30px;
 }

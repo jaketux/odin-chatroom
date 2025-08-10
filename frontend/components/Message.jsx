@@ -14,7 +14,7 @@ export default function Message(props) {
           </div>
           <div className="message-right">
             <div className="message-right-top">
-              <div className="message-user">{user.firstname}</div>
+              <div className="message-username">{user.firstname}</div>
               <div className="message-time">{dateTime}</div>
             </div>
             <div className="message-right-bottom">
@@ -26,7 +26,7 @@ export default function Message(props) {
       {user.id === currentUser.id && (
         <div className="message-user">
           <div className="message-user-top">
-            <div className="message-user">{user.firstname}</div>
+            <div className="message-username-user">{user.firstname}</div>
             <div className="message-time-user">{dateTime}</div>
           </div>
           <div className="message-user-bottom">

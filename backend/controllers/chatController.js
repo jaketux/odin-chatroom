@@ -149,9 +149,12 @@ async function createMessage(req, res) {
           },
         });
 
-        const updatedChat = await prisma.chat.findUnique({
+        const updatedChat = await prisma.chat.update({
           where: {
             id: chatId,
+          },
+          data: {
+            updatedAt: new Date(),
           },
           include: {
             users: true,
