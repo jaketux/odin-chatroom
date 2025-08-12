@@ -3,9 +3,19 @@ import "./App.css";
 import Header from "../components/Header";
 import Message from "../components/Message";
 import ProfileIcon from "../src/assets/user.png";
+import Chats from "../components/Chats";
+import Login from "../components/Login";
 
 function App() {
   const [count, setCount] = useState(0);
+
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  const [currentError, setCurrentError] = useState(false);
+
+  const [errorInView, setErrorInView] = useState(null);
+
+  const [user, setUser] = useState(null);
 
   const testUser = {
     id: 1,
@@ -22,7 +32,14 @@ function App() {
   return (
     <>
       <Header />
-
+      {!loggedIn && (
+        <Login
+          setLoggedIn={setLoggedIn}
+          setCurrentError={setCurrentError}
+          setErrorInView={setErrorInView}
+          setUser={setUser}
+        />
+      )}
       <Message
         user={testUser}
         content={
@@ -39,6 +56,7 @@ function App() {
         dateTime={"24/06/2025 10:42am"}
         currentUser={testUser}
       />
+      {/* <Chats /> */}
     </>
   );
 }
