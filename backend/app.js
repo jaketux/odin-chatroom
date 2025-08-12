@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const app = express();
 
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors());
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

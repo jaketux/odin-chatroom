@@ -9,11 +9,11 @@ export default function Login(props) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "http://localhost:5173/",
       },
-      credentials: "include",
       body: JSON.stringify({ username: username, password: password }),
     }).then(async (res) => {
-      const data = await res.json;
+      const data = await res.json();
       if (!res.ok) {
         setCurrentError(true);
         setErrorInView(data.error);
@@ -35,7 +35,7 @@ export default function Login(props) {
         <label htmlFor="username">Username:</label>
         <input type="text" name="username" id="username" />
         <label htmlFor="password">Password:</label>
-        <input type="text" name="password" id="password" />
+        <input type="password" name="password" id="password" />
         <button type="submit" className="login-btn">
           Login
         </button>
